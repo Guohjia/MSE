@@ -1,0 +1,31 @@
+{
+  "name": "MSE",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start":"node server/app.js",
+    "dev": "webpack --config webpack.config.js --mode development --watch",
+    "prod": "webpack --mode production"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Guohjia/MSE.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Guohjia/MSE/issues"
+  },
+  "homepage": "https://github.com/Guohjia/MSE#readme",
+  "dependencies": {
+    "EventEmitter": "^1.0.0"
+  },
+  "devDependencies": {
+    "webpack": "^4.16.3",
+    "webpack-cli": "^3.1.0",
+    "webpack-dev-server": "^3.1.5"
+  }
+}
