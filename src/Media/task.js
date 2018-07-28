@@ -7,13 +7,11 @@ class Task{
   }
 
   fetchData(){
-    var xhr = new XMLHttpRequest;
-    xhr.open('get', this._fetchUrl);
-    xhr.responseType = 'arraybuffer';
-    xhr.onload = ()=>{
-      this._taskCallback(xhr.response);
-    }
-    xhr.send();
+    fetch(this._fetchUrl).then(function(response) {
+      return response.arrayBuffer();
+    }).then( arrayBuffer => {
+      this._taskCallback(arrayBuffer)
+    })
   }
 }
 
