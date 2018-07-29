@@ -1,25 +1,28 @@
 import Task from './task';
-import MP4 from './FMP4';
+import EventEmitter from 'event-emitter';
+// import MP4 from './FMP4';
 class MSE {
     constructor(options) {
-        this._mimeCodec = options.mimeCodec;
-        this._video = options.video;
-        this._url = options.url;
+        this._state = options.state;
+
+        this._mimeCodec = this._state.getState('mimeCodec');
+        this._video = this._state.getState('video');
+        this._url = this._state.getState('url');
+        this._bufferLimited = this._state.getState('bufferLimited');
+
         this.sourceOpen = this.sourceOpen.bind(this);
         this.appendBuffer = this.appendBuffer.bind(this);
+        this.endOfStream = this.endOfStream.bind(this);
+        
+        EventEmitter(this);
+        this.on('loadData',finish =>{
+            this._task.emit('loadData',finish);
+            if( finish ) { this._loadFinsh = finish;}
+        });
 
+        this.bufferQueue = [];
+        this._loadFinsh = false;
         this.init();
-        this.toFMP4();
-    }
-
-    toFMP4(){
-        let mp4 = new MP4('./MP4file/240_test.mp4');
-        mp4.once('moovReady',() => {
-            console.log('ready');
-            console.log(mp4.packMeta())
-        })
-        console.log(mp4.packMeta())
-        console.log(mp4);
     }
 
     init() {
@@ -34,26 +37,42 @@ class MSE {
 
     sourceOpen() {
         this._sourceBuffer = this._mediaSource.addSourceBuffer(this._mimeCodec);
-        new Task({
-            url:this._url,
+        this._task = new Task({
+            state:this._state,
             callback:this.appendBuffer
+        });
+        this._sourceBuffer.addEventListener('updateend', () =>  {
+            if( this._loadFinsh ) { this.endOfStream();}
+            let buffer = this.bufferQueue.shift();
+            if (buffer) {
+                // console.log('切换清晰度,添加新的Buffer')
+                this._sourceBuffer.appendBuffer(buffer);
+            }
         });
     }
 
-    appendBuffer(buf) {
-        this._sourceBuffer.addEventListener('updateend', () =>  {
-            // console.log(buf)
-            if (!this._sourceBuffer.updating && this.state === 'open') {
-                //在数据请求完成后，我们需要调用 endOfStream()。它会改变 MediaSource.readyState 为 ended 并且触发 sourceended 事件。
-                this._mediaSource.endOfStream();
-                this._video.play().then(()=>{
-                    console.log('成功播放咯')
-                }).catch( err => {
-                    console.log('.js-log-mp4', err)
-                });
-            }
-        });
-        this._sourceBuffer.appendBuffer(buf);
+    appendBuffer(buffer) {
+        let sourceBuffer =this._sourceBuffer;
+        if (sourceBuffer.updating === false && this.state === 'open') {
+            sourceBuffer.appendBuffer(buffer)
+            return true
+        } else {
+            this.bufferQueue.push(buffer)
+            return false
+        }
+    }
+
+    removeBuffer (start, end) {
+        console.log('切换清晰度,remove原来的Buffer')
+        this.sourceBuffer.remove(start, end)
+      }
+    
+    endOfStream () {
+        //在数据请求完成后，我们需要调用 endOfStream()。
+        //它会改变 MediaSource.readyState 为 ended 并且触发 sourceended 事件。
+        if (this.state === 'open') {
+            this._mediaSource.endOfStream();
+        }
     }
 
     get state () {

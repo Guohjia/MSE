@@ -9,57 +9,60 @@
 </head>
 
 <body>
-    <video id="mseVideo" controls></video>
+    <video id="mseVideo" controls autoplay></video>
     <script src="./index.bundle.js"></script>
+
+
     <!-- <script>
-        // var video = document.querySelector('video');
+        //MDN 版本
+        var video = document.querySelector('video');
 
-        // var assetURL = './frag_bunny.mp4';
-        // var mimeCodec = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"';
+        var assetURL = './MP4file/frag_bunny.mp4';
+        var mimeCodec = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"';
 
-        // if ('MediaSource' in window && MediaSource.isTypeSupported(mimeCodec)) {
-        //     var mediaSource = new MediaSource();
-        //     // console.log(mediaSource.readyState); // closed
-        //     video.src = URL.createObjectURL(mediaSource);
-        //     // console.log(mediaSource.readyState);
-        //     mediaSource.addEventListener('sourceopen', sourceOpen);
-        // } else {
-        //     console.error('Unsupported MIME type or codec: ', mimeCodec);
-        // }
+        if ('MediaSource' in window && MediaSource.isTypeSupported(mimeCodec)) {
+            var mediaSource = new MediaSource();
+            // console.log(mediaSource.readyState); // closed
+            video.src = URL.createObjectURL(mediaSource);
+            // console.log(mediaSource.readyState);
+            mediaSource.addEventListener('sourceopen', sourceOpen);
+        } else {
+            console.error('Unsupported MIME type or codec: ', mimeCodec);
+        }
 
-        // function sourceOpen(_) {
-        //     // console.log(this.readyState); // open
-        //     var mediaSource = this;
-        //     var sourceBuffer = mediaSource.addSourceBuffer(mimeCodec);
-        //     fetchAB(assetURL, function (buf) {
-        //         console.log(buf)
-        //         sourceBuffer.addEventListener('updateend', function (_) {
-        //             console.log(buf)
-        //             if (!sourceBuffer.updating && mediaSource.readyState === 'open') {
-        //                 mediaSource.endOfStream();  //表示流的结束，但为啥一定要end
-        //                 video.play().then(function() {
-        //                 }).catch(function(err) {
-        //                     log('.js-log-mp4', err)
-        //                 });
-        //             }
-        //             // mediaSource.endOfStream();
-        //             // video.play();
-        //             //console.log(mediaSource.readyState); // ended
-        //         });
-        //         sourceBuffer.appendBuffer(buf);
-        //     });
-        // };
+        function sourceOpen(_) {
+            // console.log(this.readyState); // open
+            var mediaSource = this;
+            var sourceBuffer = mediaSource.addSourceBuffer(mimeCodec);
+            fetchAB(assetURL, function (buf) {
+                console.log(buf)
+                sourceBuffer.addEventListener('updateend', function (_) {
+                    console.log(buf)
+                    if (!sourceBuffer.updating && mediaSource.readyState === 'open') {
+                        mediaSource.endOfStream();  //表示流的结束，但为啥一定要end
+                        video.play().then(function() {
+                        }).catch(function(err) {
+                            // log('.js-log-mp4', err)
+                        });
+                    }
+                    // mediaSource.endOfStream();
+                    // video.play();
+                    //console.log(mediaSource.readyState); // ended
+                });
+                sourceBuffer.appendBuffer(buf);
+            });
+        };
 
-        // function fetchAB(url, cb) {
-        //     // console.log(url);
-        //     var xhr = new XMLHttpRequest;
-        //     xhr.open('get', url);
-        //     xhr.responseType = 'arraybuffer';
-        //     xhr.onload = function () {
-        //         cb(xhr.response);
-        //     };
-        //     xhr.send();
-        // };
+        function fetchAB(url, cb) {
+            // console.log(url);
+            var xhr = new XMLHttpRequest;
+            xhr.open('get', url);
+            xhr.responseType = 'arraybuffer';
+            xhr.onload = function () {
+                cb(xhr.response);
+            };
+            xhr.send();
+        };
     </script> -->
 </body>
 
